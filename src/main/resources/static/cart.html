@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Varukorg – Herrkläder</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1><a href="index.html">Herrkläder</a></h1>
+        <nav>
+            <a href="index.html">Hem</a>
+            <a href="cart.html" class="active">Varukorg</a>
+        </nav>
+    </header>
+
+    <section class="heroSection">
+        <img src="/img/hero.png" alt="Herrkläder" class="heroImage">
+    </section>
+
+    <main class="cartMain">
+        <h2 class="cartPageTitle">Varukorg</h2>
+        <div class="cartContent">
+            <div class="cartItems" id="cartItems"></div>
+            <aside class="cartSummary">
+                <h3>Orderöversikt</h3>
+                <dl class="summaryList">
+                    <dt>Delsumma</dt>
+                    <dd id="subtotal">0 kr</dd>
+                    <dt>Frakt</dt>
+                    <dd>0 kr</dd>
+                    <dt class="totalLabel">Totalt</dt>
+                    <dd class="totalValue" id="total">0 kr</dd>
+                </dl>
+                <a href="#" class="checkOut"> Fortsätt till Betala</a>
+            </aside>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 Herrkläder</p>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
