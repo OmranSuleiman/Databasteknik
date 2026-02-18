@@ -1,106 +1,94 @@
+-- Ta bort tabeller i rätt ordning (pga foreign keys)
 
-CREATE DATABASE IF NOT EXISTS handel DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
-USE handel;
-
-SET FOREIGN_KEY_CHECKS = 0;
-
-DROP TABLE IF EXISTS order_items;
-DROP TABLE IF EXISTS orders;
-DROP TABLE IF EXISTS cart_items;
-DROP TABLE IF EXISTS carts;
-DROP TABLE IF EXISTS products;
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS categories;
-DROP TABLE IF EXISTS reviews;
-DROP TABLE IF EXISTS settings;
-
-SET FOREIGN_KEY_CHECKS = 1;
+IF OBJECT_ID('order_items', 'U') IS NOT NULL DROP TABLE order_items;
+IF OBJECT_ID('orders', 'U') IS NOT NULL DROP TABLE orders;
+IF OBJECT_ID('cart_items', 'U') IS NOT NULL DROP TABLE cart_items;
+IF OBJECT_ID('carts', 'U') IS NOT NULL DROP TABLE carts;
+IF OBJECT_ID('products', 'U') IS NOT NULL DROP TABLE products;
+IF OBJECT_ID('users', 'U') IS NOT NULL DROP TABLE [users];
 
 
-CREATE TABLE users (
-                       user_id INT AUTO_INCREMENT PRIMARY KEY,
-                       email VARCHAR(255) NOT NULL UNIQUE,
-                       password VARCHAR(255) NOT NULL,
-                       full_name VARCHAR(255) NOT NULL,
-                       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- Skapa tabeller igen (Azure SQL version)
+
+CREATE TABLE [users] (
+    user_id INT IDENTITY(1,1) PRIMARY KEY,
+    email NVARCHAR(255) NOT NULL UNIQUE,
+    password NVARCHAR(255) NOT NULL,
+    full_name NVARCHAR(255) NOT NULL,
+    created_at DATETIME2 DEFAULT SYSDATETIME()
 );
-
 
 CREATE TABLE products (
-                          product_id INT AUTO_INCREMENT PRIMARY KEY,
-                          name VARCHAR(255) NOT NULL,
-                          description TEXT,
-                          price DECIMAL(10,2) NOT NULL,
-                          stock INT NOT NULL,
-                          image_path VARCHAR(255)
+    product_id INT IDENTITY(1,1) PRIMARY KEY,
+    name NVARCHAR(255) NOT NULL,
+    description NVARCHAR(MAX),
+    price DECIMAL(10,2) NOT NULL,
+    stock INT NOT NULL,
+    image_path NVARCHAR(255)
 );
-
 
 CREATE TABLE carts (
-                       cart_id INT AUTO_INCREMENT PRIMARY KEY,
-                       user_id INT NOT NULL,
-                       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                       FOREIGN KEY (user_id) REFERENCES users(user_id)
+    cart_id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT NOT NULL,
+    created_at DATETIME2 DEFAULT SYSDATETIME(),
+    FOREIGN KEY (user_id) REFERENCES [users](user_id)
 );
-
 
 CREATE TABLE cart_items (
-                            cart_item_id INT AUTO_INCREMENT PRIMARY KEY,
-                            cart_id INT NOT NULL,
-                            product_id INT NOT NULL,
-                            quantity INT NOT NULL,
-                            FOREIGN KEY (cart_id) REFERENCES carts(cart_id),
-                            FOREIGN KEY (product_id) REFERENCES products(product_id),
-                            UNIQUE (cart_id, product_id)
+    cart_item_id INT IDENTITY(1,1) PRIMARY KEY,
+    cart_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL,
+    FOREIGN KEY (cart_id) REFERENCES carts(cart_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id),
+    CONSTRAINT UQ_cart_product UNIQUE (cart_id, product_id)
 );
-
 
 CREATE TABLE orders (
-                        order_id INT AUTO_INCREMENT PRIMARY KEY,
-                        user_id INT NOT NULL,
-                        order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        status VARCHAR(50) NOT NULL,
-                        total_amount DECIMAL(10,2) NOT NULL,
-                        FOREIGN KEY (user_id) REFERENCES users(user_id)
+    order_id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT NOT NULL,
+    order_date DATETIME2 DEFAULT SYSDATETIME(),
+    status NVARCHAR(50) NOT NULL,
+    total_amount DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES [users](user_id)
 );
-
 
 CREATE TABLE order_items (
-                             order_item_id INT AUTO_INCREMENT PRIMARY KEY,
-                             order_id INT NOT NULL,
-                             product_id INT NOT NULL,
-                             quantity INT NOT NULL,
-                             price_at_purchase DECIMAL(10,2) NOT NULL,
-                             FOREIGN KEY (order_id) REFERENCES orders(order_id),
-                             FOREIGN KEY (product_id) REFERENCES products(product_id)
+    order_item_id INT IDENTITY(1,1) PRIMARY KEY,
+    order_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL,
+    price_at_purchase DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
 
--- EXEMPELDATA – HERRKLÄDER
-INSERT INTO users (email, password, full_name) VALUES
-                                                   ('erik@example.com', '12345df', 'Erik Eriksson'),
-                                                   ('anders@example.com', '23245sd', 'Anders Andersson'),
-                                                   ('johan@example.com', '543321aa', 'Johan Johansson');
+-- Lägg in enkel testdata (herrkläder)
 
-INSERT INTO products (name, description, price, stock, image_path) VALUES
-                                                                       ('Kardigan', 'Mjuk herrkardigan i ull, färger: svart, grå, beige. Storlekar S–XL.', 399.00, 40, '/img/product_1.png'),
-                                                                       ('Jeans Slim', 'Slim fit herrjeans i stretch, mörkblå. Storlekar 28–38.', 599.00, 60, '/img/product_2.png'),
-                                                                       ('T-shirt', '100% ekologisk bomull, herr-t-shirt. Många färger.', 149.00, 120, '/img/product_3.png'),
-                                                                       ('Vinterjacka', 'Varm herrvinterjacka med foder, storlekar S–XL.', 899.00, 25, '/img/product_4.png');
+INSERT INTO [users] (email, password, full_name)
+VALUES
+('omran@test.com', '123456', 'Omran Suleiman'),
+('alex@test.com', '123456', 'Alex Johansson');
 
-INSERT INTO carts (user_id) VALUES
-                                (1), (2);
+INSERT INTO products (name, description, price, stock, image_path)
+VALUES
+('Black T-shirt', 'Cotton black t-shirt for men', 199.00, 25, 'tshirt_black.jpg'),
+('Blue Jeans', 'Slim fit blue jeans', 599.00, 15, 'jeans_blue.jpg'),
+('Grey Hoodie', 'Warm grey hoodie', 499.00, 20, 'hoodie_grey.jpg'),
+('Leather Jacket', 'Black leather jacket', 1299.00, 5, 'jacket_black.jpg');
 
-INSERT INTO cart_items (cart_id, product_id, quantity) VALUES
-                                                           (1, 1, 2),
-                                                           (1, 4, 1),
-                                                           (2, 2, 1);
 
-INSERT INTO orders (user_id, status, total_amount) VALUES
-                                                       (1, 'Skickad', 1697.00),
-                                                       (2, 'Levererad', 599.00);
+-- SELECT * FROM [users];
+-- SELECT * FROM products;
+-- update products set [name] = 'Sommar jacka' WHERE product_id = 4;
+-- DELETE FROM products WHERE product_id = 4;
+-- INSERT INTO products (name, description, price, stock, image_path) VALUES ('Black T-shirt', 'Cotton black t-shirt for men', 199.00, 25, 'tshirt_black.jpg');
+-- DROP TABLE products;
+-- ALTER TABLE products ADD size NVARCHAR(50);
+-- TRUNCATE TABLE products; snabbar än delete, radera allt data men behåll tabellen
+-- SELECT u.full_name, o.order_id FROM [users] u JOIN orders o ON u.user_id = o.user_id;
+-- SELECT * FROM products WHERE price > 500; filtrera
+-- SELECT * FROM products ORDER BY price DESC; sortera
+-- SELECT status, COUNT(*)FROM orders GROUP BY status; gruppera
 
-INSERT INTO order_items (order_id, product_id, quantity, price_at_purchase) VALUES
-                                                                                (1, 1, 2, 399.00),
-                                                                                (1, 4, 1, 899.00),
-                                                                                (2, 2, 1, 599.00);

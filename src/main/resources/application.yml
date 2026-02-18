@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:sqlserver://omrancloud2026.database.windows.net:1433;database=database_II;;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+    username: omran@omrancloud2026
+    password: Taralycka321
+
+
+  jpa:
+    show-sql: true
+    hibernate:
+    properties:
+      ddl-auto: update
+      dialect: org.hibernate.dialect.SQLServerDialect
+
+server:
+  port: 9090
+

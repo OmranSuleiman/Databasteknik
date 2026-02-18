@@ -1,5 +1,7 @@
 /* Sprint 1: Klädbutik, Visa produkter, varukorg, lägg till, ta bort */
 
+
+// Startar allt när sidan laddas
 document.addEventListener("DOMContentLoaded", function () {
 
     var apiBase = (window.location.protocol === "file:") ? "http://localhost:8080" : "";
@@ -48,6 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+// lägger till produkter till varukorg
 function addToCart(e) {
     var btn = e.target;
     var product = {
@@ -68,6 +71,7 @@ function addToCart(e) {
     alert(product.name + " lades i varukorgen");
 }
 
+// Visar innehållet i varukorg
 function renderCart() {
     var container = document.getElementById("cartItems");
     var subtotalEl = document.getElementById("subtotal");
@@ -104,6 +108,7 @@ function renderCart() {
     if (totalEl) totalEl.textContent = total + " kr";
 }
 
+// Tar bort produkter från kundes varukorg
 function removeFromCart(e) {
     var id = e.target.dataset.id;
     var cart = JSON.parse(localStorage.getItem("cart")) || [];
