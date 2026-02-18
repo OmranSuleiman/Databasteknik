@@ -36,3 +36,7 @@ out/
 ### Application Properties (Database credentials) ###
 src/main/resources/application.properties
 application.properties
+
+.vscode/
+build/
+.gradle/
